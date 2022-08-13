@@ -24,12 +24,13 @@ public class PlayerController : MonoBehaviour
     private AudioSource playerAudio;
     private float horizontal;
     private float zRange = 8.5f;
-    private int i = 0;
+    private int i;
     private int score = 0;
 
 
     void Start()
     {
+        i = 0;
         playerRb = GetComponent<Rigidbody>();
         playerAnim = GetComponent<Animator>();
         playerAudio = GetComponent<AudioSource>();
@@ -68,7 +69,7 @@ public class PlayerController : MonoBehaviour
 
     void JumpMove()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && isOnGround && i == 0)
+        if (Input.GetKeyDown(KeyCode.Space) && isOnGround && i == 0 && Time.timeScale == 1)
         {
             ScoreToAdd(25);
             StartCoroutine(TimeSlow());

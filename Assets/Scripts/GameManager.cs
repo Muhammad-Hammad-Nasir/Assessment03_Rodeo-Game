@@ -1,11 +1,21 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 public class GameManager : MonoBehaviour
 {
     public GameObject[] obstaclePrefab;
     public GameObject[] animalPrefab;
+    public GameObject titleText;
+    public GameObject background;
+    public GameObject startButton;
+    public GameObject exitButton;
+    public GameObject gameoverText;
+    public GameObject restartButton;
 
     private PlayerController playerControllerScript;
     private Vector3 spawnPos;
@@ -18,12 +28,39 @@ public class GameManager : MonoBehaviour
     private int randomNum;
     private float randomAnimalRange;
     private int randomAnimalNum;
+    private int i;
+
+    private void Awake()
+    {
+        Time.timeScale = 0;
+    }
 
     void Start()
     {
+        i = 0;
         playerControllerScript = GameObject.Find("Player").GetComponent<PlayerController>();
         InvokeRepeating("SpawnObstacle", startDelay, repeatRate);
         InvokeRepeating("SpawnAnimal", startDelay1, repeatRate1);
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            Time.timeScale = 0;
+            titleText.SetActive(true);
+            background.SetActive(true);
+            startButton.SetActive(true);
+            exitButton.SetActive(true);
+        }
+
+        if (playerControllerScript.gameOver && i == 0)
+        {
+            gameoverText.SetActive(true);
+            restartButton.SetActive(true);
+            exitButton.SetActive(true);
+            i++;
+        }
     }
 
     void SpawnObstacle()
@@ -48,5 +85,28 @@ public class GameManager : MonoBehaviour
         {
             Instantiate(animalPrefab[randomAnimalNum], spawnPos, animalPrefab[randomAnimalNum].transform.rotation);
         }
+    }
+
+    public void RestartGame()
+    {
+        SceneManager.LoadScene(0);
+    }
+
+    public void StartGame()
+    {
+        titleText.SetActive(false);
+        background.SetActive(false);
+        startButton.SetActive(false);
+        exitButton.SetActive(false);
+        Time.timeScale = 1;
+    }
+
+    public void ExitGame()
+    {
+#if UNITY_EDITOR
+        EditorApplication.ExitPlaymode();
+#else
+        Application.Quit();
+#endif
     }
 }
